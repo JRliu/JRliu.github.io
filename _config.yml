@@ -67,8 +67,8 @@ gitalk:
   clientID: 14c6f18d0b719d27211a #生成的clientID
   clientSecret: 0904c66b9ef72221d1f0e3ebf9247b03de50b5ab #生成的clientSecret
   repo: JRliu.github.io #仓库名称
-  owner: lauginwing #github用户名
-  admin: lauginwing
+  owner: JRliu #github用户名
+  admin: JRliu
   distractionFreeMode: true #是否启用类似FB的阴影遮罩
 
 # Netease settings
