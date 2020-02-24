@@ -1,0 +1,2 @@
+I"1<p>在使用 Vscode 的 Vim 模式写字时，经常会遇到一个问题：在 insert 模式下输入完一段中文后，<code class="highlighter-rouge">Esc</code> 回到 normal 模式后，想 <code class="highlighter-rouge">J</code> 切到下一行，却跳出来中文输入法，有点难受。</p>
+:ET
