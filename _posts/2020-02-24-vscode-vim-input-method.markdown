@@ -14,13 +14,11 @@ tags: #标签
 
 如果编辑器能记住我 insert 模式下使用的输入法，在退出到 normal 模式时自动切换到英文输入法，再次进入 insert 模式后，自动切换到上次 insert 模式使用的输入法，那就挺不错了。
 
-Vscode 的 Vim 插件就有这样的功能：https://github.com/VSCodeVim/Vim#input-method
+Vscode 里面的 Vim 插件就有这样的功能：[https://github.com/VSCodeVim/Vim#input-method](https://github.com/VSCodeVim/Vim#input-method)
 
-</br>
+<!-- <br> -->
 
-- 我们首先安装 im-select: 这个命令行工具可以获取当前输入法及切换输入法。
-
-安装：
+- ### 我们首先需要安装 im-select: 这个命令行工具可以获取当前输入法及切换输入法：
 
 ```
 curl -Ls https://raw.githubusercontent.com/daipeihust/im-select/master/install_mac.sh | sh
@@ -38,11 +36,11 @@ curl -Ls https://raw.githubusercontent.com/daipeihust/im-select/master/install_m
 /usr/local/bin/im-select com.apple.keylayout.ABC
 ```
 
-</br>
+<br>
 
-- 配置 vscode 插件
+- ### 配置 vscode 插件
   ![setting](/img/in-post/vscode-vim-input-method-setting.png)
 
-</br>
+<br>
 
-- 重启编辑器就可以开始敲代码啦~
+- ### 重启编辑器就可以开始敲代码啦~
