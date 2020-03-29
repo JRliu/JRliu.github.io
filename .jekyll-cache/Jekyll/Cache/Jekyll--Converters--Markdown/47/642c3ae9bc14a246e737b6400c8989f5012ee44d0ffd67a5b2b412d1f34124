@@ -1,0 +1,5 @@
+I"
+<blockquote>
+  <p>最近在使用 taro 开发多端应用，使用了 css module 处理 css 的作用域。之前一直是使用 vue 开发的，相应的也是使用 vue 内置的 css scoped 处理。下面对两种方式做一个小小的总结~</p>
+</blockquote>
+:ET

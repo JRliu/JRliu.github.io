@@ -1,0 +1,305 @@
+I"|A<blockquote>
+  <p>最近在使用 taro 开发多端应用，使用了 css module 处理 css 的作用域。之前一直是使用 vue 开发的，相应的也是使用 vue 内置的 css scoped 处理。下面对两种方式做一个小小的总结~</p>
+</blockquote>
+
+<h3 id="实现原理">实现原理</h3>
+
+<h4 id="vue-scoped-cssvue-项目">vue scoped css（vue 项目）</h4>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre><span class="c1">// test.vue</span>
+<span class="o">&lt;</span><span class="nx">div</span> <span class="kd">class</span><span class="o">=</span><span class="dl">'</span><span class="s1">test</span><span class="dl">'</span><span class="o">&gt;</span><span class="err">哈哈</span><span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span><span class="o">&lt;</span><span class="nx">style</span> <span class="nx">scoped</span><span class="o">&gt;</span>
+<span class="p">.</span><span class="nx">test</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="nx">green</span><span class="p">;</span>
+  <span class="sr">/deep/</span> <span class="p">{</span>
+      <span class="p">.</span><span class="nx">box</span> <span class="p">{</span>
+          <span class="nl">color</span><span class="p">:</span> <span class="nx">red</span><span class="p">;</span>
+      <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="p">&lt;</span><span class="err">/</span><span class="nt">style</span><span class="p">&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>相当于</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre><span class="o">&lt;</span><span class="nx">style</span><span class="o">&gt;</span>
+<span class="p">.</span><span class="nx">test</span><span class="p">[</span><span class="nx">data</span><span class="o">-</span><span class="nx">v</span><span class="o">-</span><span class="nx">d372c4ba</span><span class="p">]</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="nx">green</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="p">.</span><span class="nx">test</span><span class="p">[</span><span class="nx">data</span><span class="o">-</span><span class="nx">v</span><span class="o">-</span><span class="nx">d372c4ba</span><span class="p">]</span> <span class="p">.</span><span class="nx">box</span><span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="nx">red</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="p">&lt;</span><span class="err">/</span><span class="nt">style</span><span class="p">&gt;</span>
+
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">class=</span><span class="s1">'test'</span> <span class="nt">data</span><span class="err">-</span><span class="nt">v</span><span class="err">-</span><span class="nt">d372c4ba</span><span class="p">&gt;</span>哈哈<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>其原理是给组件内的所有元素添加同一个全局唯一的属性：data-v-[hash]，组件的 css 内的每个 class 末尾也加上对应的选择器</p>
+
+<h4 id="css-modulereact-项目">css module（react 项目）</h4>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="c1">// style.module.css</span>
+<span class="p">.</span><span class="nx">test</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="nx">red</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// test.tsx</span>
+<span class="k">import</span> <span class="nx">style</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">style.module.css</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">className=</span><span class="si">{</span><span class="nx">style</span><span class="p">.</span><span class="nx">test</span><span class="si">}</span><span class="p">&gt;</span>哈哈<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>相当于</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="o">&lt;</span><span class="nx">style</span><span class="o">&gt;</span>
+    <span class="p">.</span><span class="nx">style</span><span class="o">-</span><span class="nx">module__test__af14f</span> <span class="p">{</span>
+        <span class="nl">color</span><span class="p">:</span> <span class="nx">red</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">&lt;</span><span class="nt">style</span><span class="p">&gt;</span>
+
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">class=</span><span class="s2">"style-module__test__af14f"</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>其原理是给元素设置全局唯一的 class：[fileName]__[className]__[hash]，具体的命名规则可以在 css-loader 的配置中设置</p>
+
+<h3 id="如何覆盖子组件的样式">如何覆盖子组件的样式？</h3>
+
+<h4 id="vue-scoped-css">vue scoped css</h4>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre></td><td class="rouge-code"><pre><span class="c1">// parent.scss</span>
+<span class="err">.</span><span class="na">parent-class</span><span class="p">:</span><span class="o">:</span><span class="n">v-deep</span> <span class="p">{</span>
+  <span class="nc">.child-class</span> <span class="p">{</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="err">或</span> <span class="nc">.parent-class</span> <span class="p">{</span>
+  <span class="o">&gt;&gt;&gt;</span> <span class="p">{</span>
+    <span class="nc">.child-class</span> <span class="p">{</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="err">或</span> <span class="nc">.parent-class</span> <span class="p">{</span>
+  <span class="o">/</span><span class="nt">deep</span><span class="o">/</span> <span class="p">{</span>
+    <span class="nc">.child-class</span> <span class="p">{</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>相当于</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="nc">.parent-class</span><span class="o">[</span><span class="nt">data-v-asdf2</span><span class="o">]</span> <span class="nc">.child-class</span> <span class="p">{</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>其原理是，在编译过程中，遇到 ::v-deep、»&gt;、/deep/ 这三种伪元素或选择器时，会停止在 class 末尾添加‘[data-v-asdf]’，所以这个 class 就能作用到子组件里的元素了</p>
+
+<h4 id="css-module">css module</h4>
+
+<p>由于 css module 处理 css 作用域的方式有所不同，是通过将 class 名称唯一化达到目的的，而我们在写代码时是无法知道编译后的 class 名称的。所以只能通过在子组件的特定元素上添加特有属性等方式，让我们在写父组件的样式时，能定位到子组件的特定元素~，
+例如现在要在父组件修改子组件中‘哈哈’的颜色为绿色：</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+</pre></td><td class="rouge-code"><pre><span class="c1">// parent.tsx</span>
+<span class="k">import</span> <span class="nx">style</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">parent.module.scss</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Child</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">child.tsx</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">className=</span><span class="si">{</span><span class="nx">style</span><span class="p">.</span><span class="nx">box</span><span class="si">}</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nc">Child</span> <span class="p">/&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+
+<span class="c1">// parent.module.scss</span>
+<span class="p">.</span><span class="nx">box</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="nx">red</span><span class="p">;</span>
+
+    <span class="p">.</span><span class="nx">text</span><span class="p">[</span><span class="nx">data</span><span class="o">-</span><span class="nx">role</span><span class="p">]</span> <span class="p">{</span>
+        <span class="nl">color</span><span class="p">:</span> <span class="nx">green</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// child.tsx</span>
+<span class="k">import</span> <span class="nx">style</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">child.module.scss</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">className=</span><span class="si">{</span><span class="nx">style</span><span class="p">.</span><span class="nx">box</span><span class="si">}</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className=</span><span class="si">{</span><span class="nx">style</span><span class="p">.</span><span class="nx">text</span><span class="si">}</span> <span class="nt">data</span><span class="err">-</span><span class="nt">role</span><span class="p">&gt;</span>哈哈<span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>;
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>或者在全局作用域下声明 class，前提是子组件‘哈哈’所在的元素的 class 没有使用 css module 的 class：</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="c1">// parent.module.scss</span>
+<span class="nd">:global</span><span class="o">(</span><span class="nc">.text</span><span class="o">)</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">green</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="err">或</span> <span class="nd">:global</span><span class="o">()</span> <span class="p">{</span>
+  <span class="nc">.text</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="no">green</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>全局作用域下声明的 class 编译时不会加上 hash。这样就可以覆盖子元素中 class 为 text 的元素了</p>
+
+<p>其实，为了代码的可维护性，除了在“迫不得已”的情况下，我们不应该在父组件的 css 中修改子组件的样式，而是通过传参的方式，将样式传递给子组件使用。另外，在编写一些与业务无关的组件，如 button、popup 等组件时，尽量不要使用 scoped css、css module 等方式管理 css 作用域，而是使用一套严格规范的 class 命名规则来约束，因为这些组件被修改样式的频率会大很多，而且很可能会被抽出来单独一个库。如果使用了 css module 来管理 css 作用域，使用者修改了的样式，很可能在你更新了组件库之后就失效了~</p>
+
+<h3 id="css-module-与-js">css module 与 js</h3>
+
+<p>使用 css module 时，我们在 js 中引入的，实际上是一个包含着 class 编译前和编译后名称映射的对象，如：</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="c1">// test.module.scss</span>
+<span class="nc">.text</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="no">green</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nc">.title</span> <span class="p">{</span>
+  <span class="nl">font-size</span><span class="p">:</span> <span class="m">16px</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="c1">// test.ts</span>
+<span class="k">import</span> <span class="nx">style</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">test.module.scss</span><span class="dl">"</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">style</span><span class="p">);</span>
+<span class="c1">//输出 {</span>
+<span class="c1">//     text: 'chiid__text__safsf1',</span>
+<span class="c1">//     title: 'chiid__title__1wfqwf'</span>
+<span class="c1">// }</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>此外，我们也可以在 css 中指定要导出的内容。比较常用的就是导出在 scss 中定义的变量：</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="c1">// test.module.scss</span>
+<span class="nv">$text-color</span><span class="p">:</span> <span class="mh">#222</span><span class="p">;</span>
+
+<span class="nd">:export</span> <span class="p">{</span>
+  <span class="na">textColor</span><span class="p">:</span> <span class="nv">$text-color</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="c1">// test.ts</span>
+<span class="k">import</span> <span class="nx">style</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">test.module.scss</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">style</span><span class="p">.</span><span class="nx">textColor</span><span class="p">);</span> <span class="c1">// 输出 ‘#222’</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+:ET
