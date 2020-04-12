@@ -1,0 +1,101 @@
+I"1<blockquote>
+  <p>记录一下 PostHtml 中的一些比较有用的插件<br />
+参考自<a href="https://github.com/posthtml/posthtml">PostHtml 文档</a></p>
+</blockquote>
+
+<h2 id="posthtml-pug">posthtml-pug</h2>
+
+<p>将 pug 转化成 html</p>
+
+<h2 id="posthtml-md">posthtml-md</h2>
+
+<p>将 md 语法转化为 html 语法</p>
+
+<h2 id="posthtml-retext">posthtml-retext</h2>
+
+<p>根据规则转化自然语言（例如特定字符串转成 emoji 表情）</p>
+
+<h2 id="posthtml-head-elements">posthtml-head-elements</h2>
+
+<p>将 JSON 配置生成 head 元素内容</p>
+
+<h2 id="posthtml-include">posthtml-include</h2>
+
+<p>引入 html 片段（实现 html 的模块化）</p>
+
+<h2 id="posthtml-modules">posthtml-modules</h2>
+
+<p>同上，而且她能实现 vue 中 slot 的效果</p>
+
+<h2 id="posthtml-inline-assets">posthtml-inline-assets</h2>
+
+<p>将外部的 css、js、图片等资源内联进 html</p>
+
+<h2 id="posthtml-cache">posthtml-cache</h2>
+
+<p>在某标签的某属性值后增加随机查询参数，如</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"script.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="c">&lt;!-- 处理后 --&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"script.js?v=93ce_Ltuub"</span><span class="nt">&gt;&lt;/script&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="posthtml-spaceless">posthtml-spaceless</h2>
+
+<p>删除指定区域内标签之间的空格</p>
+
+<h2 id="posthtml-postcss">posthtml-postcss</h2>
+
+<p>使用 postcss 处理 html 内的样式（style 标签和内联样式）</p>
+
+<h2 id="posthtml-px2rem">posthtml-px2rem</h2>
+
+<p>在 html 内使用 px2rem 处理 style 标签和内联样式</p>
+
+<h2 id="posthtml-inline-css">posthtml-inline-css</h2>
+
+<p>可将外部样式或 style 标签内样式弄成内联样式</p>
+
+<h2 id="posthtml-collect-inline-styles">posthtml-collect-inline-styles</h2>
+
+<p>可将内联样式提取到 style 标签内</p>
+
+<h2 id="posthtml-style-to-file">posthtml-style-to-file</h2>
+
+<p>可将内联样式和 style 标签内样式提取到独立文件内</p>
+
+<h2 id="posthtml-color-shorthand-hex-to-six-digit">posthtml-color-shorthand-hex-to-six-digit</h2>
+
+<p>将缩写的 hex color 转化成 6 个字符的格式</p>
+
+<h2 id="posthtml-minifier">posthtml-minifier</h2>
+
+<p>压缩</p>
+
+<h2 id="htmlnano">htmlnano</h2>
+
+<p>同上</p>
+
+<h2 id="posthtml-remove-attributes">posthtml-remove-attributes</h2>
+
+<p>根据属性名或值去除指定属性</p>
+
+<h2 id="posthtml-remove-tags">posthtml-remove-tags</h2>
+
+<p>去除指定名称的标签</p>
+
+<h2 id="posthtml-remove-duplicates">Posthtml-remove-duplicates</h2>
+
+<p>根据标签名删除内容完全一样的标签</p>
+
+<h2 id="posthtml-transfomer">posthtml-transfomer</h2>
+
+<p>1.将标记的引用外部文件的 script 或 link 标签的内容，内联进 html 2.将标记的标签删除 3.将标记的多个引用外部文件的 script 或 link 标签的内容，内联进 html 内的同一标签内</p>
+
+<h2 id="posthtml-tidy">posthtml-tidy</h2>
+
+<p>整理 html、清理无用的标签</p>
+:ET

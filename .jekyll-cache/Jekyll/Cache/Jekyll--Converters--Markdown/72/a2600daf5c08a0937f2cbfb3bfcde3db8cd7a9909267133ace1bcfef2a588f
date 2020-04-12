@@ -1,0 +1,282 @@
+I"N><p>好无聊~，总结一下 webpack 常用的配置吧~</p>
+
+<h2 id="context-编译的上下文">context [编译的上下文]</h2>
+
+<p>基础目录，绝对路径，用于从配置中解析 <code class="highlighter-rouge">entry</code> 和 <code class="highlighter-rouge">loader</code>，默认是当前目录，一般的项目很少会改这个配置~</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="p">{</span>
+  <span class="nl">context</span><span class="p">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="dl">"</span><span class="s2">app</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="entry-应用打包的入口">entry [应用打包的入口]</h2>
+
+<p>以打包网页为例，一个 html 一个<code class="highlighter-rouge">entry</code>~，多个 html 就多个<code class="highlighter-rouge">entry</code></p>
+
+<p>多个<code class="highlighter-rouge">entry</code>的栗子：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="p">{</span>
+    <span class="nl">entry</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nl">home</span><span class="p">:</span> <span class="dl">'</span><span class="s1">./home.js</span><span class="dl">'</span><span class="p">,</span>
+        <span class="nx">about</span><span class="p">:</span> <span class="dl">'</span><span class="s1">./about.js</span><span class="dl">'</span><span class="p">,</span>
+        <span class="nx">multi</span><span class="p">:</span> <span class="p">[</span><span class="dl">'</span><span class="s1">./multi1.js</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">./multi2.js</span><span class="dl">'</span><span class="p">]</span> <span class="c1">// 数组内的模块整合成一个文件输出</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="output-输出文件">output [输出文件]</h2>
+
+<p>栗子</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="p">{</span>
+    <span class="nl">output</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nl">path</span><span class="p">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="dl">'</span><span class="s1">dist</span><span class="dl">'</span><span class="p">),</span>
+        <span class="nx">filename</span><span class="p">:</span> <span class="dl">'</span><span class="s1">[name].[chunkhash].bundle.js</span><span class="dl">'</span><span class="p">,</span>
+        <span class="nx">publicPath</span><span class="p">:</span> <span class="dl">'</span><span class="s1">https://qn.com/haha/</span><span class="dl">'</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="outputpath">output.path</h4>
+
+<p>设置输出文件的目录，使用绝对路径</p>
+
+<h4 id="outputfilename">output.filename</h4>
+
+<p>设置输出文件的文件名</p>
+
+<h4 id="outputpublicpath">output.publicPath</h4>
+
+<p>设置项目中所有资源（js、css、图片等）的基础路径</p>
+
+<h2 id="resolve-解析模块">resolve [解析模块]</h2>
+
+<blockquote>
+  <p>配置模块如何解析。主要就是影响 <code class="highlighter-rouge">import 'some library'</code> 等操作</p>
+</blockquote>
+
+<h4 id="resolvealias">resolve.alias</h4>
+
+<p>创建 import 或 require 的别名，来确保模块引入变得更简单。
+引用路径可以使用变量（如环境变量），从而实现，同一个<code class="highlighter-rouge">import</code>，在不同环境下引入不同的模块。</p>
+
+<p>栗子：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="p">{</span>
+  <span class="nl">resolve</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nl">alias</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nl">config</span><span class="p">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s2">`src/config/</span><span class="p">${</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">APP_ENV</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>在 typescript 中，相当于配置 tsconfig.json 中的 path：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="p">{</span>
+    <span class="nl">compilerOptions</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nl">paths</span><span class="p">:</span>  <span class="p">{</span>
+            <span class="dl">"</span><span class="s2">@/*</span><span class="dl">"</span><span class="p">:</span> <span class="p">[</span><span class="dl">"</span><span class="s2">src/*</span><span class="dl">"</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="resolvealiasfields">resolve.aliasFields</h4>
+
+<p>指定一个字段，例如 browser，如果引入的模块的 package.json 内包含 browser 字段，那么打包时会使用该 browser 字段的值作为该模块的别名。</p>
+
+<h4 id="resolveextensions">resolve.extensions</h4>
+
+<p>”自动解析指定的扩展“。
+默认值是<code class="highlighter-rouge">['.wasm', '.mjs', '.js', '.json']</code>，没有包含<code class="highlighter-rouge">.ts</code>，所以想要引入 typescript 文件，需要加上<code class="highlighter-rouge">.ts</code>~</p>
+
+<h4 id="resolvesymlinks">resolve.symlinks</h4>
+
+<p>是否使用软链接寻找模块。影响 <code class="highlighter-rouge">npm link</code> 等操作。</p>
+
+<h2 id="module-处理模块">module [处理模块]</h2>
+
+<blockquote>
+  <p>配置如何处理不同类型的模块</p>
+</blockquote>
+
+<h4 id="modulenoparse">module.noParse</h4>
+
+<p>webpack 解析时，忽略指定的模块。
+如果你能确定一个模块（如 jquery）没有引用其他库，则可以忽略该模块，提高构建性能~</p>
+
+<h4 id="modulerules">module.rules</h4>
+
+<p>配置规则数组，实现使用不同的 loader 处理不同类型的模块
+一个比较丰满的栗子</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+</pre></td><td class="rouge-code"><pre><span class="p">{</span>
+    <span class="nl">module</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nl">rules</span><span class="p">:</span> <span class="p">{</span>
+            <span class="p">{</span>
+                <span class="nl">test</span><span class="p">:</span> <span class="sr">/</span><span class="se">\.</span><span class="sr">sass$/</span><span class="p">,</span>
+                <span class="nx">oneOf</span><span class="p">:</span> <span class="p">[</span> <span class="c1">// 子规则数组，只使用第一个匹配到的子规则。</span>
+                    <span class="p">{</span>
+                        <span class="na">resourceQuery</span><span class="p">:</span> <span class="sr">/module/</span><span class="p">,</span>
+                        <span class="na">test</span><span class="p">:</span> <span class="sr">/</span><span class="se">\.</span><span class="sr">module</span><span class="se">\.\w</span><span class="sr">+$/</span><span class="p">,</span>  <span class="c1">// 子规则也可设置各种匹配规则</span>
+                        <span class="na">use</span><span class="p">:</span> <span class="p">[</span> <span class="c1">// loader的执行顺序是 ’下 --&gt; 上， 右 --&gt; 左‘</span>
+                            <span class="p">{</span>
+                                <span class="na">loader</span><span class="p">:</span> <span class="dl">'</span><span class="s1">vue-style-loader</span><span class="dl">'</span><span class="p">,</span> <span class="c1">// 将处理好的css以style标签的形式插入到文档中</span>
+                                <span class="na">options</span><span class="p">:</span> <span class="p">{</span>
+                                    <span class="na">sourceMap</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+                                    <span class="na">shadowMode</span><span class="p">:</span> <span class="kc">false</span>
+                                <span class="p">}</span>
+                            <span class="p">},</span>
+                            <span class="p">{</span>
+                                <span class="na">loader</span><span class="p">:</span> <span class="dl">'</span><span class="s1">css-loader</span><span class="dl">'</span><span class="p">,</span> <span class="c1">// 解析、处理 js中引入的css模块</span>
+                                <span class="na">options</span><span class="p">:</span> <span class="p">{</span>
+                                    <span class="na">sourceMap</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+                                    <span class="na">importLoaders</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                                    <span class="na">modules</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+                                    <span class="na">localIdentName</span><span class="p">:</span> <span class="dl">'</span><span class="s1">[name]_[local]_[hash:base64:5]</span><span class="dl">'</span>
+                                <span class="p">}</span>
+                            <span class="p">},</span>
+                            <span class="p">{</span>
+                                <span class="na">loader</span><span class="p">:</span> <span class="dl">'</span><span class="s1">postcss-loader</span><span class="dl">'</span><span class="p">,</span>  <span class="c1">// 使用postcss处理css</span>
+                                <span class="na">options</span><span class="p">:</span> <span class="p">{</span>
+                                    <span class="na">sourceMap</span><span class="p">:</span> <span class="kc">false</span>
+                                <span class="p">}</span>
+                            <span class="p">},</span>
+                            <span class="p">{</span>
+                                <span class="na">loader</span><span class="p">:</span> <span class="dl">'</span><span class="s1">sass-loader</span><span class="dl">'</span><span class="p">,</span> <span class="c1">// 解析、处理 js中引入的scss模块</span>
+                                <span class="na">options</span><span class="p">:</span> <span class="p">{</span>
+                                    <span class="na">sourceMap</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+                                    <span class="na">indentedSyntax</span><span class="p">:</span> <span class="kc">true</span>
+                                <span class="p">}</span>
+                            <span class="p">}</span>
+                        <span class="p">]</span>
+                    <span class="p">}</span>
+                <span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="plugin-使用插件">plugin [使用插件]</h2>
+
+<blockquote>
+  <p>使用 webpack 插件~</p>
+</blockquote>
+
+<h4 id="专有名词">专有名词：</h4>
+
+<ul>
+  <li>
+    <p>compiler: 代表了完整的 webpack 环境配置。这个对象在启动 webpack 时被一次性建立，并配置好所有可操作的设置，包括 options，loader 和 plugin。当在 webpack 环境中应用一个插件时，插件将收到此 compiler 对象的引用。可以使用它来访问 webpack 的主环境。</p>
+  </li>
+  <li>
+    <p>compilation: 代表了一次资源版本构建。当运行 webpack 开发环境中间件时，每当检测到一个文件变化，就会创建一个新的 compilation，从而生成一组新的编译资源。一个 compilation 对象表现了当前的模块资源、编译生成资源、变化的文件、以及被跟踪依赖的状态信息。compilation 对象也提供了很多关键时机的回调，以供插件做自定义处理时选择使用。</p>
+  </li>
+</ul>
+
+<h4 id="插件执行的原理">插件执行的原理：</h4>
+
+<p>插件函数的 prototype 上定义的 <code class="highlighter-rouge">apply</code> 方法接收到参数 – <code class="highlighter-rouge">compiler</code> 对象， <code class="highlighter-rouge">compiler.plugin('hook', callback)</code> 将我们的定义的函数 <code class="highlighter-rouge">callback</code> 绑定到 webpack 自身的事件钩子 <code class="highlighter-rouge">hook</code> 上。其中，<code class="highlighter-rouge">callback</code> 函数能接收到参数 – <code class="highlighter-rouge">compilation</code>，我们可以根据<code class="highlighter-rouge">compilation</code>提供的数据实现我们的需求了~</p>
+
+<h4 id="webpack-提供的所有钩子">webpack 提供的<a href="https://www.webpackjs.com/api/compiler-hooks/">所有钩子</a></h4>
+
+<h4 id="常用的插件">常用的插件</h4>
+
+<ul>
+  <li>DefinePlugin - 创建一个在编译时可以配置的全局常量。</li>
+  <li>HtmlWebpackPlugin - 生成 html，并将打包后的资源插入文档中对应的位置。</li>
+  <li>CopyWebpackPlugin - 复制文件~</li>
+  <li>HotModuleReplacementPlugin - 模块热替换(HMR)</li>
+  <li>DllPlugin - 一般用于将不会改动的代码单独打包成一个动态库</li>
+  <li>DllReferencePlugin - 使用 DllPlugin 打包出来的动态库</li>
+  <li>CaseSensitivePathsPlugin - 强制校验模块引用路径的大小写~</li>
+  <li>ForkTsCheckerWebpackPlugin - TypeScript 类型检查</li>
+</ul>
+
+<hr />
+
+<p><br /></p>
+
+<blockquote>
+  <p>杂项： <a href="https://github.com/Yatoo2018/webpack-chain/tree/zh-cmn-Hans">webpack-chain 尝试通过提供可链式或顺流式的 API 创建和修改 webpack 配置</a>；</p>
+</blockquote>
+:ET
