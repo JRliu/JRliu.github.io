@@ -47,7 +47,10 @@ tags: #标签
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: '[name].[chunkhash].bundle.js',
-        publicPath: 'https://qn.com/haha/'
+        publicPath: 'https://qn.com/haha/',
+        // 如果你想打包为库，需要设置以下两项
+        library: 'myLibrary',
++       libraryTarget: 'umd'
     }
 }
 ```
@@ -173,6 +176,25 @@ webpack 解析时，忽略指定的模块。
 }
 ```
 
+## externals [外部拓展]
+
+防止将某些 import 的包(package)打包到 bundle 中，而是在运行时(runtime)再去从外部获取这些扩展依赖(external dependencies)。
+
+栗子
+
+```js
+{
+    externals: {
+        jquery: 'jQuery',
+        lodash : {
+            commonjs: 'lodash',
+            amd: 'lodash',
+            root: '_' // 指向全局变量
+        }
+    }
+}
+```
+
 ## plugin [使用插件]
 
 > 使用 webpack 插件~
@@ -195,6 +217,7 @@ webpack 解析时，忽略指定的模块。
 - HtmlWebpackPlugin - 生成 html，并将打包后的资源插入文档中对应的位置。
 - CopyWebpackPlugin - 复制文件~
 - HotModuleReplacementPlugin - 模块热替换(HMR)
+- CommonsChunkPlugin - 提取公共代码
 - DllPlugin - 一般用于将不会改动的代码单独打包成一个动态库
 - DllReferencePlugin - 使用 DllPlugin 打包出来的动态库
 - CaseSensitivePathsPlugin - 强制校验模块引用路径的大小写~
