@@ -7,7 +7,7 @@ author: Lauginwing # 作者
 # header-img: img/post-css-module.jpg #这篇文章标题背景图片
 catalog: true # 是否归档
 tags: #标签
-  - 构建工具
+  - 项目构建
 ---
 
 好无聊~，总结一下 webpack 常用的配置吧~
