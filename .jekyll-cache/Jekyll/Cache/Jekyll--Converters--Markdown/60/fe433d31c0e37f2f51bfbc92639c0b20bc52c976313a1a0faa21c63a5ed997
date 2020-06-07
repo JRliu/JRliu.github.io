@@ -1,0 +1,188 @@
+I"�1<p>在很多场景里，特别是 B 端，越来越多的包壳 spa 开始取代原生 app 的位置。但是，包壳 spa 对比原生 app，体验上还是有很大的差距的，其中很明显的一点是，原生 app 从页面 A 打开新页面 B 后，返回页面 A，页面 A 还是原来的状态；而 vue 的 spa 则会根据路由，重新渲染对应的 A 页面的组件（没有使用<code class="highlighter-rouge">keep-alive</code>），状态也会丢失，如果使用了<code class="highlighter-rouge">keep-alive</code>，确实能保存页面状态，但是之后打开新的 A 页面，还是会沿用旧的页面状态，这时我们可以使用<code class="highlighter-rouge">activated</code>钩子去重置状态，但是工作量会很大。
+有没有办法，使得从 A 页面跳转到 B 页面时保存 A 页面的状态，而从 A 页面返回的话，销毁 A 页面的状态呢？</p>
+
+<p>实现方法：</p>
+
+<ol>
+  <li>使用 keep-alive 组件；</li>
+  <li>判断本次路由跳转时前进还是后退，如果是后退的话，销毁页面组件的实例；</li>
+</ol>
+
+<p>第一点，我们只需在 app 根组件，使用<code class="highlighter-rouge">keep-alive</code>组件包裹<code class="highlighter-rouge">router-view</code>组件即可</p>
+
+<p>第二点，需要分成两个任务，一个是判断前进还是后退，一个是销毁<code class="highlighter-rouge">keep-alive</code>组件缓存的组件实例
+想要知道当前路由跳转时前进还是后退，我们需要维护一个路由历史。</p>
+
+<ul>
+  <li>判断前进或后退</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+</pre></td><td class="rouge-code"><pre><span class="k">import</span> <span class="nx">_</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">lodash</span><span class="dl">'</span>
+<span class="kd">const</span> <span class="nx">afterEnterFn</span> <span class="o">=</span> <span class="kc">null</span>
+<span class="kd">const</span> <span class="nx">historyList</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="kd">const</span> <span class="nx">mixins</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">beforeRouteLeave</span><span class="p">(</span><span class="nx">to</span><span class="p">,</span> <span class="k">from</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">historyList</span><span class="p">.</span><span class="nx">length</span><span class="p">){</span>
+            <span class="nx">historyList</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="k">from</span><span class="p">.</span><span class="nx">fullPath</span><span class="p">)</span>
+        <span class="p">}</span>
+
+        <span class="c1">// 前往的页面是否历史中倒数第二个</span>
+        <span class="kd">const</span> <span class="nx">isToLastButOne</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">findLastIndex</span><span class="p">(</span><span class="nx">historyList</span><span class="p">,</span> <span class="nx">item</span><span class="o">=&gt;</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="nx">item</span> <span class="o">===</span> <span class="nx">to</span><span class="p">.</span><span class="nx">fullPath</span>
+                <span class="p">})</span> <span class="o">===</span>
+                    <span class="nx">routerList</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">((</span><span class="nx">historyList</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">isToLastButOne</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">// 判断为后退</span>
+            <span class="nx">routerList</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">routerList</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="cm">/**
+              *销毁当前页面组件实例的缓存
+            **/</span>
+            <span class="nx">destoryCache</span><span class="p">(</span><span class="k">this</span><span class="p">)</span>
+
+        <span class="p">}</span> <span class="k">else</span><span class="p">{</span>
+            <span class="c1">// 判断为前进</span>
+            <span class="nx">afterEnterFn</span> <span class="o">=</span> <span class="p">()</span><span class="o">=&gt;</span> <span class="p">{</span>
+                <span class="c1">// 在下一页面的beforeRouteEnter内再将其加入历史，因为有可能在beforeRouteLeave取消掉导航</span>
+                <span class="nx">historyList</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">to</span><span class="p">.</span><span class="nx">fullPath</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="nx">beforeRouteEnter</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">afterEnterFn</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">function</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">afterEnterFn</span><span class="p">()</span>
+            <span class="nx">afterEnterFn</span> <span class="o">=</span> <span class="kc">null</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<ul>
+  <li>实现 destoryCache(销毁当前页面组件实例的缓存)：</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+</pre></td><td class="rouge-code"><pre><span class="kd">function</span> <span class="nx">destoryCache</span><span class="p">(</span><span class="nx">scope</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">scope</span><span class="p">.</span><span class="nx">$vnode</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">if</span> <span class="p">(</span>
+    <span class="nx">scope</span><span class="p">.</span><span class="nx">$vnode</span><span class="p">.</span><span class="nx">parent</span> <span class="o">&amp;&amp;</span>
+    <span class="c1">// 父组件(keep-alive组件)实例</span>
+    <span class="nx">scope</span><span class="p">.</span><span class="nx">$vnode</span><span class="p">.</span><span class="nx">parent</span><span class="p">.</span><span class="nx">componentInstance</span> <span class="o">&amp;&amp;</span>
+    <span class="nx">scope</span><span class="p">.</span><span class="nx">$vnode</span><span class="p">.</span><span class="nx">parent</span><span class="p">.</span><span class="nx">componentInstance</span><span class="p">.</span><span class="nx">cache</span>
+  <span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">scope</span><span class="p">.</span><span class="nx">$vnode</span><span class="p">.</span><span class="nx">componentOptions</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// 将源码中获取缓存key的代码复制过来~</span>
+      <span class="kd">let</span> <span class="nx">key</span> <span class="o">=</span>
+        <span class="nx">scope</span><span class="p">.</span><span class="nx">$vnode</span><span class="p">.</span><span class="nx">key</span> <span class="o">==</span> <span class="kc">null</span>
+          <span class="p">?</span> <span class="nx">scope</span><span class="p">.</span><span class="nx">$vnode</span><span class="p">.</span><span class="nx">componentOptions</span><span class="p">.</span><span class="nx">Ctor</span><span class="p">.</span><span class="nx">cid</span> <span class="o">+</span>
+            <span class="p">(</span><span class="nx">scope</span><span class="p">.</span><span class="nx">$vnode</span><span class="p">.</span><span class="nx">componentOptions</span><span class="p">.</span><span class="nx">tag</span>
+              <span class="p">?</span> <span class="s2">`::</span><span class="p">${</span><span class="nx">scope</span><span class="p">.</span><span class="nx">$vnode</span><span class="p">.</span><span class="nx">componentOptions</span><span class="p">.</span><span class="nx">tag</span><span class="p">}</span><span class="s2">`</span>
+              <span class="p">:</span> <span class="dl">""</span><span class="p">)</span>
+          <span class="p">:</span> <span class="nx">scope</span><span class="p">.</span><span class="nx">$vnode</span><span class="p">.</span><span class="nx">key</span><span class="p">;</span>
+
+      <span class="kd">let</span> <span class="nx">cache</span> <span class="o">=</span> <span class="nx">scope</span><span class="p">.</span><span class="nx">$vnode</span><span class="p">.</span><span class="nx">parent</span><span class="p">.</span><span class="nx">componentInstance</span><span class="p">.</span><span class="nx">cache</span><span class="p">;</span>
+
+      <span class="kd">let</span> <span class="nx">keys</span> <span class="o">=</span> <span class="nx">scope</span><span class="p">.</span><span class="nx">$vnode</span><span class="p">.</span><span class="nx">parent</span><span class="p">.</span><span class="nx">componentInstance</span><span class="p">.</span><span class="nx">keys</span><span class="p">;</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">cache</span><span class="p">[</span><span class="nx">key</span><span class="p">])</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">keys</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+          <span class="kd">let</span> <span class="nx">index</span> <span class="o">=</span> <span class="nx">keys</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
+          <span class="k">if</span> <span class="p">(</span><span class="nx">index</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">keys</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="c1">// 删除缓存的组件实例</span>
+        <span class="k">delete</span> <span class="nx">cache</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="nx">scope</span><span class="p">.</span><span class="nx">$destroy</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>另外，还需处理手动刷新页面（F5）的情况，内存里的<code class="highlighter-rouge">historyList</code>会被清空。我们可以在 sectionStorage 里维护<code class="highlighter-rouge">historyList</code>来解决；
+在上面的 mixin 里，我们还可以处理其他的事务，如后退后恢复滚动位置（vue-router 使用 hash 模式时）等。</p>
+:ET

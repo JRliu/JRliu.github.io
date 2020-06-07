@@ -1,0 +1,150 @@
+I"�<h2 id="intersectionobserver">IntersectionObserver</h2>
+
+<ul>
+  <li>
+    <p>目标(target)元素和根(root)元素的交集大小超过阈值(threshold)规定的大小时候，执行回调函数。IntersectionObserver API 是异步的，不会随着目标元素的滚动同步触发。</p>
+  </li>
+  <li>
+    <p>配置项</p>
+  </li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>{
+    root: document.body,  // 所观察对象的具体祖先元素(element)。如果未传入值或值为null，则默认使用顶级文档的视窗。
+    rootMargin: "0px 0px 0px 0px", // 计算交叉时添加到根(root)边界盒bounding box的矩形偏移量， 可以有效的缩小或扩大根的判定范围从而满足计算需要。
+    thresholds: [0, 0.5, 1] // 一个包含阈值的列表,当观察对象的任何阈值被越过时，都会执行回调
+}
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<ul>
+  <li>
+    <p><a href="https://developer.mozilla.org/zh-CN/docs/Web/API/IntersectionObserver">文档</a></p>
+  </li>
+  <li>
+    <p>兼容性：ios 12.2，Android 4.4，chrome 51</p>
+  </li>
+  <li>
+    <p>polyfill：<a href="https://www.npmjs.com/package/intersection-observer">intersection-observer</a>，
+基于 scroll 和 resize 事件实现。</p>
+  </li>
+  <li>
+    <p>使用实例：1. 固顶 2. 懒加载 3. 滚动到底部加载</p>
+  </li>
+</ul>
+
+<iframe height="500" style="width: 100%;" scrolling="no" title="IntersectionObserver   sticky and lazy-load" src="https://codepen.io/lauginwing/embed/bGENyXz?height=265&amp;theme-id=light&amp;default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href="https://codepen.io/lauginwing/pen/bGENyXz">IntersectionObserver   sticky and lazy-load</a> by lauginwing
+  (<a href="https://codepen.io/lauginwing">@lauginwing</a>) on <a href="https://codepen.io">CodePen</a>.
+</iframe>
+
+<h2 id="mutationobserver">MutationObserver</h2>
+
+<ul>
+  <li>
+    <p>在指定的 DOM 发生变化时执行回调函数。</p>
+  </li>
+  <li>
+    <p>他的回调是 microTask，旧版 vue 曾使用<code class="highlighter-rouge">MutationObserver</code>实现 nextTick(没有 promise 的时候)：</p>
+  </li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="kd">var</span> <span class="nx">counter</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">observer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MutationObserver</span><span class="p">(</span><span class="nx">nextTickHandler</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">textNode</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createTextNode</span><span class="p">(</span><span class="nb">String</span><span class="p">(</span><span class="nx">counter</span><span class="p">));</span>
+<span class="nx">observer</span><span class="p">.</span><span class="nx">observe</span><span class="p">(</span><span class="nx">textNode</span><span class="p">,</span> <span class="p">{</span>
+  <span class="na">characterData</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+<span class="p">});</span>
+<span class="nx">timerFunc</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">counter</span> <span class="o">=</span> <span class="p">(</span><span class="nx">counter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="nx">textNode</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="nb">String</span><span class="p">(</span><span class="nx">counter</span><span class="p">);</span>
+<span class="p">};</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<ul>
+  <li>配置项</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre>// 前三项中必须要有一项为true，否则会抛错
+{
+    childList: true,  // 观察目标子节点的变化，是否有添加或者删除
+    attributes: true, // 观察属性变动
+    characterData: true, // 监视指定目标节点或子节点树中节点所包含的字符数据的变化
+
+    subtree: true,    // 观察所有后代节点
+    attributeFilter: ['id'], // 要监视的特定属性名称的数组，不在此数组中的属性变化时将被忽略；未设置此属性的则观察所有属性变动
+    attributeOldValue: true,  // 当监视节点的属性改动时，是否记录改动前的值
+    characterDataOldValue: true // 当监视节点的文本改动时，是否记录改动前的值
+}
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<ul>
+  <li>
+    <p><a href="https://developer.mozilla.org/zh-CN/docs/Web/API/MutationObserver">文档</a></p>
+  </li>
+  <li>
+    <p>兼容性：ios 7，Android 4.4，chrome 51，IE 11 (移动端放心使用)</p>
+  </li>
+  <li>
+    <p>polyfill：<a href="https://www.npmjs.com/package/mutationobserver-shim">mutationobserver-shim</a></p>
+  </li>
+  <li>
+    <p>使用实例：1.修复 ios12 下软键盘顶起页面后，收起软键盘，页面位置不恢复的 bug；（在初始化应用时，设置观察器：当有 input 元素新增时，给该 input 元素添加 blur 事件，失去焦点时，滚动视窗。适用于客户端渲染的场景）</p>
+  </li>
+</ul>
+
+<iframe height="400" style="width: 100%;" scrolling="no" title="MutationObserver fix ios12 input bug" src="https://codepen.io/lauginwing/embed/jOWPxLB?height=265&amp;theme-id=light&amp;default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href="https://codepen.io/lauginwing/pen/jOWPxLB">MutationObserver fix ios12 input bug</a> by lauginwing
+  (<a href="https://codepen.io/lauginwing">@lauginwing</a>) on <a href="https://codepen.io">CodePen</a>.
+</iframe>
+
+<h2 id="resizeobserver">ResizeObserver</h2>
+
+<ul>
+  <li>
+    <p>元素的尺寸变化时，触发回调。</p>
+  </li>
+  <li>
+    <p><a href="https://developer.mozilla.org/zh-CN/docs/Web/API/ResizeObserver">文档</a></p>
+  </li>
+  <li>
+    <p>兼容性：chrome 66， ios 和安卓都没有实现</p>
+  </li>
+  <li>
+    <p>polyfill： <a href="https://www.npmjs.com/package/resize-observer-polyfill">ResizeObserver Polyfill</a></p>
+  </li>
+  <li>
+    <p>使用例子：拖动缩放 textarea 元素，内容显示其当前的长宽</p>
+  </li>
+</ul>
+
+<iframe height="400" style="width: 100%;" scrolling="no" title="ResizeObserver" src="https://codepen.io/lauginwing/embed/MWKwqXr?height=265&amp;theme-id=light&amp;default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href="https://codepen.io/lauginwing/pen/MWKwqXr">ResizeObserver</a> by lauginwing
+  (<a href="https://codepen.io/lauginwing">@lauginwing</a>) on <a href="https://codepen.io">CodePen</a>.
+</iframe>
+:ET

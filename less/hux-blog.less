@@ -9,9 +9,10 @@
 
 body {
   .sans-serif;
-  font-size: 16px;
+  font-size: 18px;
   // Hux mpdify to 16px (Mobile First), and increase to 20px while 768+ width
-  color: @gray-dark;
+  //   color: @gray-dark;
+  color: #1a1a1a;
   //-webkit-user-select:text; //对于 Blog 还是先不开启这句。
   overflow-x: hidden;
 
@@ -197,6 +198,7 @@ samp {
   }
   // downscale the font a little bit in mobile
   @media screen and (max-width: 768px) {
+    font-size: 16px;
     h1 {
       font-size: 30px;
     }

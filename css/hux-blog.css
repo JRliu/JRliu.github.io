@@ -579,8 +579,8 @@ body {
      */
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Arial", "PingFang SC", "Hiragino Sans GB", "STHeiti", "Microsoft YaHei", "Microsoft JhengHei", "Source Han Sans SC", "Noto Sans CJK SC", "Source Han Sans CN", "Noto Sans SC", "Source Han Sans TC", "Noto Sans CJK TC", "WenQuanYi Micro Hei", SimSun, sans-serif;
   line-height: 1.7;
-  font-size: 16px;
-  color: #404040;
+  font-size: 18px;
+  color: #1a1a1a;
   overflow-x: hidden;
   text-rendering: auto;
   -webkit-font-smoothing: antialiased;
@@ -745,6 +745,9 @@ samp {
   margin-top: 10px;
 }
 @media screen and (max-width: 768px) {
+  .post-container {
+    font-size: 16px;
+  }
   .post-container h1 {
     font-size: 30px;
   }
